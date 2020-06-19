@@ -1,0 +1,14 @@
+C:\xelerators\kafka\kAfkawebsample\bin\Debug\appsettings.Development.json
+C:\xelerators\kafka\kAfkawebsample\bin\Debug\appsettings.json
+C:\xelerators\kafka\kAfkawebsample\bin\Debug\Properties\launchSettings.json
+C:\xelerators\kafka\kAfkawebsample\bin\Debug\kAfkawebsample.exe
+C:\xelerators\kafka\kAfkawebsample\bin\Debug\kAfkawebsample.dll
+C:\xelerators\kafka\kAfkawebsample\bin\Debug\Confluent.Kafka.dll
+C:\xelerators\kafka\kAfkawebsample\bin\Debug\kAfkawebsample.pdb
+C:\xelerators\kafka\kAfkawebsample\obj\Debug\docker-compose.dcprojAssemblyReference.cache
+C:\xelerators\kafka\kAfkawebsample\obj\Debug\docker-compose.dcproj.CoreCompileInputs.cache
+C:\xelerators\kafka\kAfkawebsample\obj\Debug\docker-compose.dcproj.CopyComplete
+C:\xelerators\kafka\kAfkawebsample\bin\Debug\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\xelerators\kafka\kAfkawebsample\bin\Debug\Microsoft.OpenApi.dll
+C:\xelerators\kafka\kAfkawebsample\bin\Debug\Swashbuckle.AspNetCore.Swagger.dll
+C:\xelerators\kafka\kAfkawebsample\bin\Debug\kAfkawebsample.xml

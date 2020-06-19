@@ -1,0 +1,53 @@
+networks:
+  KafkaNetwork:
+    driver: bridge
+services:
+  kafka:
+    depends_on:
+    - zookeeper
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    hostname: kafka
+    image: confluentinc/cp-kafka
+    networks:
+      KafkaNetwork: {}
+    ports:
+    - published: 9092
+      target: 9092
+  kafka.nosql.data:
+    image: mongo:3.6
+    networks:
+      KafkaNetwork: {}
+  kafkawebsample:
+    build:
+      context: C:\xelerators\kafka\kAfkawebsample
+      dockerfile: Dockerfile
+    depends_on:
+    - kafka
+    - zookeeper
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+    image: kafkawebsample
+    networks:
+      KafkaNetwork: {}
+    ports:
+    - published: 50929
+      target: 80
+    - published: 50928
+      target: 443
+    volumes:
+    - C:\Users\macosta\AppData\Roaming\ASP.NET\Https:/root/.aspnet/https:ro
+    - C:\Users\macosta\AppData\Roaming\Microsoft\UserSecrets:/root/.microsoft/usersecrets:ro
+  zookeeper:
+    hostname: zookeeper
+    image: zookeeper
+    networks:
+      KafkaNetwork: {}
+    ports:
+    - published: 2181
+      target: 2181
+    restart: unless-stopped
+version: '3.4'

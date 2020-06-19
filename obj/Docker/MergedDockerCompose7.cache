@@ -1,0 +1,121 @@
+networks:
+  KafkaNetwork:
+    driver: bridge
+services:
+  kafka:
+    depends_on:
+    - zookeeper
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    hostname: kafka
+    image: confluentinc/cp-kafka
+    networks:
+      KafkaNetwork: {}
+    ports:
+    - published: 9092
+      target: 9092
+  kafka-rest-proxy:
+    depends_on:
+    - kafka
+    - schema-registry
+    - zookeeper
+    environment:
+      KAFKA_REST_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_REST_HOST_NAME: kafka-rest-proxy
+      KAFKA_REST_LISTENERS: http://0.0.0.0:8082/
+      KAFKA_REST_SCHEMA_REGISTRY_URL: http://schema-registry:8081/
+      KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
+    hostname: kafka-rest-proxy
+    image: confluentinc/cp-kafka-rest
+    networks:
+      KafkaNetwork: {}
+    ports:
+    - published: 8082
+      target: 8082
+  kafka-topics-ui:
+    depends_on:
+    - kafka-rest-proxy
+    environment:
+      KAFKA_REST_PROXY_URL: http://kafka-rest-proxy:8082/
+      PROXY: "true"
+    hostname: kafka-topics-ui
+    image: landoop/kafka-topics-ui
+    networks:
+      KafkaNetwork: {}
+    ports:
+    - published: 8000
+      target: 8000
+  kafka.nosql.data:
+    image: mongo:3.6
+    networks:
+      KafkaNetwork: {}
+  kafkawebsample:
+    build:
+      context: C:\xelerators\kafka\kAfkawebsample
+      dockerfile: Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: kAfkawebsample
+      target: base
+    container_name: kAfkawebsample
+    depends_on:
+    - kafka
+    - zookeeper
+    entrypoint: tail -f /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: '1'
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: kafkawebsample:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages
+        --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/netcoreapp3.1/kAfkawebsample.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof
+        dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    networks:
+      KafkaNetwork: {}
+    ports:
+    - published: 50929
+      target: 80
+    - published: 50928
+      target: 443
+    tty: true
+    volumes:
+    - C:\xelerators\kafka\kAfkawebsample:/app:rw
+    - C:\Users\macosta\vsdbg\vs2017u5:/remote_debugger:rw
+    - C:\Users\macosta\AppData\Roaming\ASP.NET\Https:/root/.aspnet/https:ro
+    - C:\Users\macosta\AppData\Roaming\Microsoft\UserSecrets:/root/.microsoft/usersecrets:ro
+    - C:\Program Files\dotnet\sdk\NuGetFallbackFolder:/root/.nuget/fallbackpackages:ro
+    - C:\Users\macosta\.nuget\packages:/root/.nuget/packages:ro
+    - C:\xelerators\kafka\kAfkawebsample:/src:rw
+  schema-registry:
+    depends_on:
+    - kafka
+    - zookeeper
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181
+    hostname: schema-registry
+    image: confluentinc/cp-schema-registry
+    networks:
+      KafkaNetwork: {}
+    ports:
+    - published: 8081
+      target: 8081
+    restart: unless-stopped
+  zookeeper:
+    hostname: zookeeper
+    image: zookeeper
+    networks:
+      KafkaNetwork: {}
+    ports:
+    - published: 2181
+      target: 2181
+    restart: unless-stopped
+version: '3.4'
